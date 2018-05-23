@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<head>
+<meta charset="UTF-8">
+
+
+ <head>
+ 
+
+      <canvas id="myChart"></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+  
+</script>
+<style>
+  .slider {
+    display: flex;
+    border-radius: 10px;
+    width: 80%;
+    margin: 40px auto;
+    background: linear-gradient(to right, #009865, #ff9934 40%, #cc0033 65%, #7e0123);
+    box-shadow: 0 4px 4px rgba(0,0,0,0.3) inset;
+}
+
+.slider li {
+    padding: 0 5%;
+    color: #ffffff;
+}
+.slider li:after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    background: #ffffff;
+}
+
+
+
+input[type=range] {
+  -webkit-appearance: none;
+  margin: 18px 0;
+  width: 100%;
+
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 19px;
+    padding: 0 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.3) inset;
+  background: linear-gradient(to right, #009865, #ff9934 40%, #cc0033 65%, #7e0123);
+  border-radius: 20px;
+  border: 0.2px solid #010101;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  border: 1px solid #000000;
+  height: 20px;
+  width: 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -1px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  
+}
+</style>
+
+ <p>Choose the alarm level for PM2.5 AQI<p>
+<input id="slide" type="range"
+ min="1" max="500" step="1" value="50"
+   onchange="onChangeTest(this)" "/>
+ 
+<div class="value">
+
+
+
+ 
+
+<div  id='map'  style='height:380px;'  />  
+<script  src="https://maps.googleapis.com/maps/api/js"></script>  
+  
+<script> 
+
+
+
+var lat;
+var lang;
+
+var pm;
+
+navigator.geolocation.getCurrentPosition(onSuccess, onError, { timeout: 30000 });
+
+function onSuccess(position) {
+lat=position.coords.latitude;
+lang=position.coords.longitude;
+
+var gurl = 'https://www.google.com/maps/search/?api=1&query='+lat+','+lang;
+console.log(gurl);
+//document.getElementById("mytext").value = gurl;
+
+
+
+      var  map  =  new  google.maps.Map(document.getElementById('map'),  { 
+
+                  center:  new  google.maps.LatLng(lat,lang),  
+                  mapTypeId:  google.maps.MapTypeId.ROADMAP,  
+                  zoom:  13 
+              });  
+  
+                              var  t  =  new  Date().getTime();  
+      var  waqiMapOverlay  =  new  google.maps.ImageMapType({  
+                  getTileUrl:  function(coord,  zoom)  {  
+                            return  'https://tiles.waqi.info/tiles/usepa-aqi/'  +  zoom  +  "/"  +  coord.x  +  "/"  +  coord.y  +  ".png?token=75182c6924ca2a65b8cdeb95094a0b8395dfbc8f"; 
+
+                },  
+                  name:  "Air  Quality",  
+        });  
+  
+      map.overlayMapTypes.insertAt(0,waqiMapOverlay); 
+
+
+
+
+
+
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+};
+
+getJSON('https://api.waqi.info/feed/geo:'+lat+';'+lang+'/?token=75182c6924ca2a65b8cdeb95094a0b8395dfbc8f',
+function(err, data) {
+  if (err !== null) {
+    alert('Something went wrong: ' + err);
+  } else {
+
+ pm = data.data.iaqi.pm25.v;
+
+    //alert('Your data aqi: ' + data.data.aqi);
+    //alert('Your data no2: ' + data.data.iaqi.no2.v);
+    //alert('Your data o3: ' + data.data.iaqi.o3.v);
+   // alert('Your data so3: ' + data.data.iaqi.so2.v);
+    //alert('Your data pm10: ' + data.data.iaqi.pm10.v);
+   // alert('Your data pm25: ' + data.data.iaqi.pm25.v);
+
+
+
+var ctx = document.getElementById('myChart').getContext('2d');
+ctx.canvas.width = 160;
+ctx.canvas.height = 200;
+var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+   gradient.addColorStop(0.4, 'rgba(126, 1, 35, 1)');
+   gradient.addColorStop(0.5, 'rgba(103, 0, 153, 1)');
+    gradient.addColorStop(0.7, 'rgba(204, 0, 51, 1)');
+      gradient.addColorStop(0.78, 'rgba(255, 153, 52, 1)'); 
+       gradient.addColorStop(0.83, 'rgba(254, 222, 51, 1)'); 
+gradient.addColorStop(0.89, 'rgba(0, 152, 101, 1)'); 
+    
+   
+var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'bar',
+
+    // The data for our dataset
+    data: {
+
+        labels: ["PM2.5 AQI", "PM10 AQI","O3 AQI","NO2 AQI","SO2 AQI"],   
+    datasets: [ 
+    {
+            label: "Current level",
+            data: [data.data.iaqi.pm25.v, data.data.iaqi.pm10.v, data.data.iaqi.o3.v, data.data.iaqi.no2.v, data.data.iaqi.so2.v],
+            borderColor: "rgba(0,0,0,1)",
+            backgroundColor: "rgba(0,0,0,1)",
+
+            //important settings
+
+            //set the width of the line ( or point )
+            pointRadius: 20,
+            // don´t show line betrween points
+            showLine: false,
+            //change points of line chart to line style ( little bit confusin why it´s named point anyway )
+            pointStyle: 'line',
+
+            //chart type
+            type: "line",
+        },
+        {
+            label: "Critical level",
+            data: [500, 500, 500, 500, 500],
+            backgroundColor: gradient,
+            
+        }/*,{
+            label: "erledigte TP",
+            data: [256, 55],
+            backgroundColor: gradient,   
+           
+
+        }*/
+    ]
+},
+options: {
+title: {
+            display: true,
+            text: data.data.city.name
+        }
+      }
+});
+
+
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      }
+
+      function onError(error) {
+alert('code: ' + error.code + '\n' +
+'message: ' + error.message + '\n');
+}
+
+
+
+
+
+
+
+
+
+ function onChangeTest(changeVal) {
+        alert("Value is " + changeVal.value);
+        if(pm > changeVal.value){
+          var snd = new Audio('/song.mp3');
+        snd.play();
+        setTimeout(function(){alert("Critical pollution level. Limit your outdoor activities")},6000);
+          alert("Critical pollution level. Limit your outdoor activities");
+        }else{
+          alert("Pollution level is beyound the critical.Feel free to go outside");
+        }
+        } 
+
+
+
+
+
+//google.maps.event.addDomListener(window, 'load', onSuccess);
+</script>
+
+
+
+</head>
+<body>
+
+<!-- <div id="map-canvas"></div>  -->
+
+
+</body>
+
+</html>
+ 
