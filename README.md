@@ -10,10 +10,4 @@ User can set the alert
 
 Geolocation
 
-
-
-<p align="center">
-  <img src="C://Users/Lolita/Downloads/air.png" width="350"/>
-</p>
-
 ![Alt text](air.png?raw=true "Title")
