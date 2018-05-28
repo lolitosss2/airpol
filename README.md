@@ -16,4 +16,4 @@ Geolocation
   <img src="C://Users/Lolita/Downloads/air.png" width="350"/>
 </p>
 
-![Alt text](C://Users/Lolita/Downloads/air.png?raw=true "Title")
+![Alt text](air.png?raw=true "Title")
