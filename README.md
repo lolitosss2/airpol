@@ -13,5 +13,5 @@ Geolocation
 
 
 <p align="center">
-  <img src="C:/Users/Lolita/Downloads/air.png" width="350"/>
+  <img src="C://Users/Lolita/Downloads/air.png" width="350"/>
 </p>
